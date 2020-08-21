@@ -1,5 +1,6 @@
 package com.ron.jedis.util;
 
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -7,47 +8,79 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Service
 public class JedisUtil {
     Jedis jedis = new Jedis("127.0.0.1", 6379);
 
 
-    public void saveUidTag_IdType(){
-        String UID = null;
-        String TAG_ID = null;
-        String TYPE = null;
-        jedis.hset(UID, TAG_ID, TYPE);
+    public void demoRedisHash(){
+        String UID = "U1c96a75ff9f519db7f6fa94b961d61ac";
+        jedis.hset(UID, "1", "A");
+        jedis.hset(UID, "2", "M");
+        Map<String, String> map = jedis.hgetAll(UID);
+        System.out.println(map);
 
-        Map<String, String> map = new HashMap<>();
-        map.put("TAG_ID1", "TYPE1");
-        map.put("TAG_ID2", "TYPE3");
-        jedis.hmset(UID, map);
+        Map<String, String> value = new HashMap<>();
+        value.put("1", "M");
+        value.put("3", "A");
+        value.put("5", "A");
+        jedis.hmset(UID, value);
+        map = jedis.hgetAll(UID);
+        System.out.println(map);
+
+        jedis.hset(UID, "2", "A");
+        map = jedis.hgetAll(UID);
+        System.out.println(map);
+
+        jedis.hdel(UID, "2");
+        map = jedis.hgetAll(UID);
+        System.out.println(map);
+        jedis.del(UID);
     }
 
-    public Map<String, String> findTag_IdTypeByUid(String UID) {
-        return jedis.hgetAll(UID);
-    }
+//    public Map<String, String> findTag_IdTypeByUid(String UID) {
+//        return jedis.hgetAll(UID);
+//    }
 
     public void saveSTag_IdUid() {
-        String TAG_ID = null;
+        String TAG_ID = "1";
         String STAG_ID = "S" + TAG_ID;
-        String UID = null;
+        String UID = "U1c96a75ff9f519db7f6fa94b961d61ac";
         jedis.sadd(STAG_ID, UID);
     }
 
-    public void saveTag_IdTimeStampUid() {
-        String TAG_ID = null;
-        Double TIMESTAMP = null;
-        String UID = null;
+    public void demoSortedSet() {
         Map<String, Double> map = new HashMap<>();
-        map.put(UID,TIMESTAMP);
-        jedis.zadd(TAG_ID, map);
+        map.put("U1c96a75ff9f519db7f6fa94b961d61ac",1596167926.0);
+        map.put("U6f2afe88ff72ed1226f597e3d24f8160",1596422074.0);
+        map.put("Ub0558ab326282ceaab9a6a228a74b4f4",1696422074.0);
+        jedis.zadd("1", map);
+        double rmap = jedis.zscore("1","U1c96a75ff9f519db7f6fa94b961d61ac");
+        System.out.println(rmap);
+        Set<String> all = jedis.zrangeByScore("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        System.out.println(all);
+        jedis.zrem("1", "U6f2afe88ff72ed1226f597e3d24f8160");
+        all = jedis.zrangeByScore("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        System.out.println(all);
+        System.out.println(jedis.zcount("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+        map.put("U6f2afe88ff72ed1226f597e3d24f8160",1596422074.0);
+        map.put("U6f2afe88ff72ed1226f597e3d24f8160",1596167928.0);
+        map.put("U1c96a75ff9f519db7f6fa94b961d61ac",1596167929.0);
+        map.put("U6f2afe88ff72ed1226f597e3d24f8160", 1596167930.0);
+        map.put("Ub0558ab326282ceaab9a6a228a74b4f4", 1596167931.0);
+
+        jedis.zadd("1",map);
+        jedis.zadd("2", map);
+        jedis.zadd("3", map);
+        Set<String> TMP1=null;
+        jedis.zunionstore("TMP1",map);
     }
 
-    public double findTag_IdTimeStampByUid(String UID) {
-        saveTag_IdTimeStampUid();
-        String TAG_ID = null;
-        return jedis.zscore(TAG_ID,UID);
-    }
+//    public double findTag_IdTimeStampByUid(String UID) {
+//        saveTag_IdTimeStampUid();
+//        String TAG_ID = null;
+//        return jedis.zscore(TAG_ID,UID);
+//    }
 
     public Set<String> findUidByTag_Id(String TAG_ID,double min,double max) {
         return jedis.zrangeByScore(TAG_ID,min,max);
