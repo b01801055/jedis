@@ -3,10 +3,7 @@ package com.ron.jedis.util;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class JedisUtil {
@@ -63,17 +60,9 @@ public class JedisUtil {
         all = jedis.zrangeByScore("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         System.out.println(all);
         System.out.println(jedis.zcount("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
-        map.put("U6f2afe88ff72ed1226f597e3d24f8160",1596422074.0);
-        map.put("U6f2afe88ff72ed1226f597e3d24f8160",1596167928.0);
-        map.put("U1c96a75ff9f519db7f6fa94b961d61ac",1596167929.0);
-        map.put("U6f2afe88ff72ed1226f597e3d24f8160", 1596167930.0);
-        map.put("Ub0558ab326282ceaab9a6a228a74b4f4", 1596167931.0);
 
-        jedis.zadd("1",map);
-        jedis.zadd("2", map);
-        jedis.zadd("3", map);
-        Set<String> TMP1=null;
-        jedis.zunionstore("TMP1",map);
+
+
     }
 
 //    public double findTag_IdTimeStampByUid(String UID) {
@@ -86,18 +75,59 @@ public class JedisUtil {
         return jedis.zrangeByScore(TAG_ID,min,max);
     }
 
-    public long countByTag_Id(String TAG_ID,double min,double max) {
-        return jedis.zcount(TAG_ID,min,max);
+    public void countByTag_Id() {
+        jedis.zadd("mysort",100.0, "zhangsan");
+        jedis.zadd("mysort",200.0,"lisi");
+        jedis.zadd("mysort",50.0,"wangwu");
+//        Map<String ,Double>map = new HashMap<String ,Double>();
+//        map.put("mutouliu",70.0);
+//
+//        jedis.zadd("mysort",map);
+//        Set<String> mysort = jedis.zrange("mysort", 0, -1);
+//        System.out.println(mysort);
+//        Set<String> mysort1 = jedis.zrange("mysort", 1, 2);
+//        System.out.println(mysort1);
+        jedis.zadd("mysort2",200.0,"lisi");
+        jedis.zadd("mysort2",50.0,"wangwu");
+
+        jedis.zadd("mysort3",50.0,"wangwu");
+
+
+
+        jedis.zunionstore("TMP1", "3","mysport","mysport2","mysport3");
+
+        System.out.println(jedis.zrange("TMP1", 0, -1));
     }
 
-    public void saveCountUnion(String TAG_ID) {
-        Map<String,Double> map = new HashMap<>();
-        String UID = null;
-        jedis.zadd(UID,map);
-        jedis.zadd(UID,map);
-        jedis.zadd(UID,map);
-        long TAG_COUNT = jedis.llen(UID);
-        jedis.zunionstore(TAG_ID, String.valueOf(TAG_COUNT),UID,UID,UID);
+    public void saveCountUnion() {
+//        Set<String> set = new HashSet<>();
+//        String UID = null;
+//        jedis.zadd(UID,map);
+//        jedis.zadd(UID,map);
+//        jedis.zadd(UID,map);
+//        long TAG_COUNT = jedis.llen(UID);
+//        jedis.zunionstore(TAG_ID, String.valueOf(TAG_COUNT),UID,UID,UID);
+        jedis.zadd("1", 1596167926, "U1c96a75ff9f519db7f6fa94b961d61ac");
+        jedis.zadd("1", 1596167927, "U6f2afe88ff72ed1226f597e3d24f8160");
+        jedis.zadd("2", 1596167928, "U6f2afe88ff72ed1226f597e3d24f8160");
+        jedis.zadd("3", 1596167929, "U1c96a75ff9f519db7f6fa94b961d61ac");
+        jedis.zadd("3", 1596167930, "U6f2afe88ff72ed1226f597e3d24f8160");
+        jedis.zadd("3", 1596167931, "Ub0558ab326282ceaab9a6a228a74b4f4");
+
+        Set<String> mysort1 = jedis.zrange("1", 0, -1);
+//        System.out.println(mysort1);
+        Set<String> mysort2 = jedis.zrange("2", 0, -1);
+//        System.out.println(mysort2);
+        Set<String> mysort3 = jedis.zrange("3", 0, -1);
+//        System.out.println(mysort3);
+        Set<String> TMP1=null;
+//        jedis.zunionstore("TMP1","1","2","3");
+//        TMP1 = jedis.zrangeByScore("TMP1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+//        System.out.println(TMP1);
+
+        jedis.zinterstore("TMP1", "1", "2","3");
+        TMP1 = jedis.zrangeByScore("TMP1", "-INF", "+INF");
+        System.out.println(TMP1);
     }
 
     public void saveCountInter(String TAG_ID) {
