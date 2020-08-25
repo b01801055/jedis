@@ -55,15 +55,16 @@ public class JedisUtil {
         map.put("Ub0558ab326282ceaab9a6a228a74b4f4", 1696422074.0);
         jedis.zadd("1", map);
         double rmap = jedis.zscore("1", "U1c96a75ff9f519db7f6fa94b961d61ac");
-        System.out.println(rmap);
+        System.out.println("計算SortedSet zscore分數: "+rmap);
         Set<String> all = jedis.zrangeByScore("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        System.out.println("讀出key為1的SortedSet 全部內容:");
         System.out.println(all);
         jedis.zrem("1", "U6f2afe88ff72ed1226f597e3d24f8160");
         all = jedis.zrangeByScore("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        System.out.println("刪除key為1 member為U6f2afe88ff72ed1226f597e3d24f8160 的SortedSet: ");
         System.out.println(all);
+        System.out.println("計算key為1 的SortedSet member數量: ");
         System.out.println(jedis.zcount("1", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
-
-
     }
 
 
