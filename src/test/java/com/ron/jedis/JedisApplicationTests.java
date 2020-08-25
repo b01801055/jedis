@@ -19,10 +19,11 @@ class JedisApplicationTests {
 
     @Test
     void test() {
-//    jedisUtil.demoRedisHash();
-//    jedisUtil.demoSortedSet();
-        jedisUtil.saveCountUnion();
+//        jedisUtil.demoRedisHash();
+//        jedisUtil.demoSortedSet();
+//        jedisUtil.saveCountUnion();
 //        jedisUtil.countByTag_Id();
+        jedisUtil.demoRedisList();
     }
 
 //    @Test
